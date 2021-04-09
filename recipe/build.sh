@@ -72,6 +72,7 @@ case "${target_platform}" in
         ;;
     linux-ppc64le)
         build_opts+=(TARGET="POWER8")
+        build_opts+=(BUILD_BFLOAT16=1)
         ;;
     linux-s390x)
         build_opts+=(TARGET="Z14")
