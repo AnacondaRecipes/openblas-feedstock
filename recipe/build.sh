@@ -2,8 +2,9 @@
 
 set -e -u
 
-if [[ ${target_platform} != linux-aarch64 ]]; then
+if [[ ${target_platform} != linux-aarch64 ]] && [[ ${target_platform} != linux-64 ]]; then
     # Stuart's recommendation to stop lapack-test from failing
+    # on linux-64 docker image this operation is not permitted
     ulimit -s 50000
 fi
 
