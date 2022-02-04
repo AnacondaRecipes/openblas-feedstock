@@ -24,7 +24,7 @@ export CF="${CFLAGS} -Wno-unused-parameter -Wno-old-style-declaration"
 unset CFLAGS
 
 # Silly "if" statement, but it makes things clearer
-if [[ ${target_platform} == osx-64 ]]; then
+if [[ ${target_platform} == osx-* ]]; then
     # No OpenMP on Mac.  We mix gfortran and clang for the macOS build, and we
     # want to avoid mixing their OpenMP implementations until we've done more
     # extensive testing.
@@ -40,6 +40,8 @@ elif [[ ${target_platform} == linux-* ]]; then
     # run-time; however, we want to avoid such mixing in the defaults channel
     # until more extensive has been done.
     USE_OPENMP="0"
+else
+    USE_OPENMP="1"
 fi
 
 if [[ "$USE_OPENMP" == "1" ]]; then
@@ -84,6 +86,9 @@ case "${target_platform}" in
         # Oldest OS X version we support is Mavericks (10.9), which requires a
         # system with at least an Intel Core 2 CPU.
         build_opts+=(TARGET="CORE2")
+        ;;
+    osx-arm64)
+        build_opts+=(TARGET="VORTEX")
         ;;
 esac
 
@@ -170,7 +175,7 @@ for arg in blas cblas lapack; do
   ln -fs "${PREFIX}"/lib/libopenblas$SHLIB_EXT "${PREFIX}"/lib/lib$arg$SHLIB_EXT
 done
 
-if [[ ${target_platform} == osx-64 ]]; then
+if [[ ${target_platform} == osx-* ]]; then
   # Needs to fix the install name of the dylib so that the downstream projects will link
   # to libopenblas.dylib instead of libopenblasp-r0.2.20.dylib
   # In linux, SONAME is libopenblas.so.0 instead of libopenblasp-r0.2.20.so, so no change needed

@@ -16,7 +16,7 @@ source:
     # Also, see # https://github.com/xianyi/OpenBLAS/issues/1761
     # - 0003-turn-TLS-off.patch
     #- gh2111.patch
-
+    - 0004-fix-loader_path.patch
 build:
   number: 2
   skip: true  # [win]
