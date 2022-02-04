@@ -38,7 +38,8 @@ requirements:
     - jom                        # [win]
     - make                       # [unix]
     - objconv                    # [osx]
-
+    - patch                      # [unix]
+    - m2-patch                   # [win]
 outputs:
   - name: libopenblas
     files:
