@@ -91,15 +91,12 @@ outputs:
 
   - name: openblas-devel
     files:
-      - include/cblas.h
-      - include/f77blas.h
-      - include/lapacke*.h
+      - include/*blas.h
+      - include/lapack*.h
       - include/openblas_config.h
       - lib/cmake/openblas
-      - lib/pkgconfig/blas.pc
-      - lib/pkgconfig/cblas.pc
-      - lib/pkgconfig/lapack.pc
-      - lib/pkgconfig/openblas.pc
+      - lib/pkgconfig/*blas.pc
+      - lib/pkgconfig/lapack*.pc
       - site.cfg
     run_exports:
       - {{ pin_subpackage("libopenblas") }}
@@ -147,6 +144,7 @@ outputs:
   - name: nomkl
     version: 3.0
     build:
+      string: "0"
       number: 0
     requirements:
       run:
