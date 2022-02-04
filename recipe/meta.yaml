@@ -1,4 +1,4 @@
-{% set version = "0.3.13" %}
+{% set version = "0.3.17" %}
 
 package:
   name: openblas_multipkg
@@ -7,18 +7,23 @@ package:
 source:
   fn: openblas-{{ version }}.tar.gz
   url: https://github.com/xianyi/OpenBLAS/archive/v{{ version }}.tar.gz
-  sha256: 79197543b17cc314b7e43f7a33148c308b0807cd6381ee77f77e15acf3e6459e
+  sha256: df2934fa33d04fd84d839ca698280df55c690c86a5a1133b3f7266fce1de279f
   patches:
-    - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
+    # - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
     # new in 0.3 series
     # requires glibc >=2.21; disable for the foreseeable future.
     #   https://github.com/xianyi/OpenBLAS/blob/dbfd7524cd94fe15930ed2f78b7789f15b22fec0/Makefile.rule#L112-L116
     # Also, see # https://github.com/xianyi/OpenBLAS/issues/1761
     # - 0003-turn-TLS-off.patch
     #- gh2111.patch
-    - 0004-fix-loader_path.patch
+    #- 0004-fix-loader_path.patch
+    # fix openmp issue in fortran code for lapack about wrong width of argument on omp call
+    # Additional make sure FMA3 from system is used only for recent gcc compilers. So on OSX
+    # we won't use possibly not available (or different ABI having) system FMA implementation.
+    - 0005-nan.patch
+
 build:
-  number: 2
+  number: 1
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
@@ -29,14 +34,16 @@ build:
 requirements:
   build:
     - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
     - {{ compiler("fortran") }}
     - perl
     - cmake                      # [win]
     - curl                       # [win]
     - jom                        # [win]
     - make                       # [unix]
+    - objconv                    # [osx]
     - patch                      # [unix]
-
+    - m2-patch                   # [win]
 outputs:
   - name: libopenblas
     files:
@@ -48,6 +55,7 @@ outputs:
     requirements:
       build:
         - {{ compiler("c") }}
+        - {{ compiler("cxx") }}
         - {{ compiler("fortran") }}
     test:
       requires:
@@ -58,7 +66,6 @@ outputs:
     about:
       home: http://www.openblas.net/
       license: BSD-3-clause
-      license_family: BSD
       license_file: LICENSE
       summary: An Optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
@@ -78,7 +85,6 @@ outputs:
     about:
       home: http://www.openblas.net/
       license: BSD-3-clause
-      license_family: BSD
       license_file: LICENSE
       summary: OpenBLAS static libraries.
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
@@ -88,15 +94,12 @@ outputs:
 
   - name: openblas-devel
     files:
-      - include/cblas.h
-      - include/f77blas.h
-      - include/lapacke*.h
+      - include/*blas.h
+      - include/lapack*.h
       - include/openblas_config.h
       - lib/cmake/openblas
-      - lib/pkgconfig/blas.pc
-      - lib/pkgconfig/cblas.pc
-      - lib/pkgconfig/lapack.pc
-      - lib/pkgconfig/openblas.pc
+      - lib/pkgconfig/*blas.pc
+      - lib/pkgconfig/lapack*.pc
       - site.cfg
     run_exports:
       - {{ pin_subpackage("libopenblas") }}
@@ -120,7 +123,6 @@ outputs:
     about:
       home: http://www.openblas.net/
       license: BSD-3-clause
-      license_family: BSD
       license_file:
         - LICENSE
         - lapack-netlib/LICENSE
@@ -145,12 +147,13 @@ outputs:
   - name: nomkl
     version: 3.0
     build:
+      string: "0"
       number: 0
     requirements:
       run:
         - blas * openblas
     about:
-      license: BSD
+      license: BSD-3-clause
 
 extra:
   recipe-maintainers:

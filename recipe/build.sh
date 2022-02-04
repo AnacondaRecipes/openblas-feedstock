@@ -2,8 +2,9 @@
 
 set -e -u
 
-if [[ ${target_platform} != linux-aarch64 ]]; then
+if [[ ${target_platform} != linux-aarch64 ]] && [[ ${target_platform} != linux-64 ]]; then
     # Stuart's recommendation to stop lapack-test from failing
+    # on linux-64 docker image this operation is not permitted
     ulimit -s 50000
 fi
 
@@ -32,7 +33,7 @@ if [[ ${target_platform} == osx-* ]]; then
 
     export CF="$CF -Wl,-rpath,$PREFIX/lib"
     export LAPACK_FFLAGS="${LAPACK_FFLAGS:-} -Wl,-rpath,$PREFIX/lib"
-    export FFLAGS="$FFLAGS -Wl,-rpath,$PREFIX/lib"
+    export FFLAGS="$FFLAGS -Wl,-rpath,$PREFIX/lib -isysroot ${CONDA_BUILD_SYSROOT}"
 elif [[ ${target_platform} == linux-* ]]; then
     # GNU OpenMP is not fork-safe.  We disable OpenMP for now, so that
     # downstream packages don't hang as a result.  Conda-forge builds OpenBLAS
@@ -40,8 +41,6 @@ elif [[ ${target_platform} == linux-* ]]; then
     # run-time; however, we want to avoid such mixing in the defaults channel
     # until more extensive has been done.
     USE_OPENMP="0"
-else
-    USE_OPENMP="1"
 fi
 
 if [[ "$USE_OPENMP" == "1" ]]; then
