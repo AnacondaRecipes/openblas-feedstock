@@ -1,4 +1,4 @@
-{% set version = "0.3.13" %}
+{% set version = "0.3.17" %}
 
 package:
   name: openblas_multipkg
@@ -7,18 +7,20 @@ package:
 source:
   fn: openblas-{{ version }}.tar.gz
   url: https://github.com/xianyi/OpenBLAS/archive/v{{ version }}.tar.gz
-  sha256: 79197543b17cc314b7e43f7a33148c308b0807cd6381ee77f77e15acf3e6459e
+  sha256: df2934fa33d04fd84d839ca698280df55c690c86a5a1133b3f7266fce1de279f
   patches:
-    - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
+    # - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
     # new in 0.3 series
     # requires glibc >=2.21; disable for the foreseeable future.
     #   https://github.com/xianyi/OpenBLAS/blob/dbfd7524cd94fe15930ed2f78b7789f15b22fec0/Makefile.rule#L112-L116
     # Also, see # https://github.com/xianyi/OpenBLAS/issues/1761
     # - 0003-turn-TLS-off.patch
     #- gh2111.patch
-    - 0004-fix-loader_path.patch
+    #- 0004-fix-loader_path.patch
+    - 0005-nan.patch
+
 build:
-  number: 2
+  number: 1
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
@@ -35,7 +37,7 @@ requirements:
     - curl                       # [win]
     - jom                        # [win]
     - make                       # [unix]
-    - patch                      # [unix]
+    - objconv                    # [osx]
 
 outputs:
   - name: libopenblas
@@ -57,8 +59,7 @@ outputs:
         - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1    # [win]
     about:
       home: http://www.openblas.net/
-      license: BSD-3-clause
-      license_family: BSD
+      license: BSD
       license_file: LICENSE
       summary: An Optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
@@ -77,8 +78,7 @@ outputs:
         - test -f ${PREFIX}/lib/libopenblas.a                            # [unix]
     about:
       home: http://www.openblas.net/
-      license: BSD-3-clause
-      license_family: BSD
+      license: BSD
       license_file: LICENSE
       summary: OpenBLAS static libraries.
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
@@ -119,8 +119,7 @@ outputs:
 
     about:
       home: http://www.openblas.net/
-      license: BSD-3-clause
-      license_family: BSD
+      license: BSD
       license_file:
         - LICENSE
         - lapack-netlib/LICENSE

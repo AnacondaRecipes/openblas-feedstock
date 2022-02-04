@@ -40,8 +40,6 @@ elif [[ ${target_platform} == linux-* ]]; then
     # run-time; however, we want to avoid such mixing in the defaults channel
     # until more extensive has been done.
     USE_OPENMP="0"
-else
-    USE_OPENMP="1"
 fi
 
 if [[ "$USE_OPENMP" == "1" ]]; then
