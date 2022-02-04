@@ -33,7 +33,7 @@ if [[ ${target_platform} == osx-* ]]; then
 
     export CF="$CF -Wl,-rpath,$PREFIX/lib"
     export LAPACK_FFLAGS="${LAPACK_FFLAGS:-} -Wl,-rpath,$PREFIX/lib"
-    export FFLAGS="$FFLAGS -Wl,-rpath,$PREFIX/lib"
+    export FFLAGS="$FFLAGS -Wl,-rpath,$PREFIX/lib -L$CONDA_BUILD_SYSROOT/usr/lib"
 elif [[ ${target_platform} == linux-* ]]; then
     # GNU OpenMP is not fork-safe.  We disable OpenMP for now, so that
     # downstream packages don't hang as a result.  Conda-forge builds OpenBLAS
