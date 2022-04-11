@@ -1,4 +1,4 @@
-{% set version = "0.3.17" %}
+{% set version = "0.3.18" %}
 
 package:
   name: openblas_multipkg
@@ -7,7 +7,7 @@ package:
 source:
   fn: openblas-{{ version }}.tar.gz
   url: https://github.com/xianyi/OpenBLAS/archive/v{{ version }}.tar.gz
-  sha256: df2934fa33d04fd84d839ca698280df55c690c86a5a1133b3f7266fce1de279f
+  sha256: 1632c1e8cca62d8bed064b37747e331a1796fc46f688626337362bf0d16aeadb
   patches:
     # - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
     # new in 0.3 series
@@ -20,10 +20,11 @@ source:
     # fix openmp issue in fortran code for lapack about wrong width of argument on omp call
     # Additional make sure FMA3 from system is used only for recent gcc compilers. So on OSX
     # we won't use possibly not available (or different ABI having) system FMA implementation.
-    - 0005-nan.patch
+    # update: this was upstreamed in v0.3.18
+    # - 0005-nan.patch
 
 build:
-  number: 1
+  number: 0
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
@@ -64,12 +65,12 @@ outputs:
         - python -c "import ctypes; ctypes.cdll['${PREFIX}/lib/libopenblas${SHLIB_EXT}']"  # [unix]
         - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1    # [win]
     about:
-      home: http://www.openblas.net/
+      home: https://www.openblas.net/
       license: BSD-3-clause
       license_file: LICENSE
       summary: An Optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-      doc_url: http://www.openblas.net/
+      doc_url: https://www.openblas.net/
       doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
@@ -83,12 +84,12 @@ outputs:
       commands:
         - test -f ${PREFIX}/lib/libopenblas.a                            # [unix]
     about:
-      home: http://www.openblas.net/
+      home: https://www.openblas.net/
       license: BSD-3-clause
       license_file: LICENSE
       summary: OpenBLAS static libraries.
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-      doc_url: http://www.openblas.net/
+      doc_url: https://www.openblas.net/
       doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
@@ -121,14 +122,14 @@ outputs:
         - {{ pin_subpackage("nomkl", exact=True) }}
 
     about:
-      home: http://www.openblas.net/
+      home: https://www.openblas.net/
       license: BSD-3-clause
       license_file:
         - LICENSE
         - lapack-netlib/LICENSE
       summary: An optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-      doc_url: http://www.openblas.net/
+      doc_url: https://www.openblas.net/
       doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
