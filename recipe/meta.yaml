@@ -1,4 +1,7 @@
-{% set version = "0.3.18" %}
+{% set version = "0.3.20" %}
+{% set build_number = "0" %}
+{% set sha_hash = "8495c9affc536253648e942908e88e097f2ec7753ede55aca52e5dead3029e3c" %}
+
 
 package:
   name: openblas_multipkg
@@ -7,7 +10,7 @@ package:
 source:
   fn: openblas-{{ version }}.tar.gz
   url: https://github.com/xianyi/OpenBLAS/archive/v{{ version }}.tar.gz
-  sha256: 1632c1e8cca62d8bed064b37747e331a1796fc46f688626337362bf0d16aeadb
+  sha256: {{ sha_hash }}
   patches:
     # - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
     # new in 0.3 series
@@ -24,7 +27,7 @@ source:
     # - 0005-nan.patch
 
 build:
-  number: 0
+  number: {{ build_number }}
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
@@ -127,6 +130,7 @@ outputs:
       license_file:
         - LICENSE
         - lapack-netlib/LICENSE
+      license_family: BSD
       summary: An optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
       doc_url: https://www.openblas.net/
