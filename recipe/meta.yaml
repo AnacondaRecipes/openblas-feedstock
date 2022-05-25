@@ -28,6 +28,7 @@ source:
 
 build:
   number: {{ build_number }}
+  # trigger: 1
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
