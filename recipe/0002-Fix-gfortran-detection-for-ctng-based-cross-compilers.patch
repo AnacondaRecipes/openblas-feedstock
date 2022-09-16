@@ -1,0 +1,12 @@
+--- a/f_check
++++ b/f_check
+@@ -71,7 +71,8 @@ if ($compiler eq "") {
+ 
+ 	if ($data =~ /GNU/) {
+ 
+-	    $data =~ /(\d+)\.(\d+).(\d+)/;
++	    $data2 = $& if $data=~/GCC.*\n/m;
++	    $data2 =~ /(\d+)\.(\d+).(\d+).$/;
+ 	    $major = $1;
+ 	    $minor = $2;
+ 

@@ -1,6 +1,6 @@
-{% set version = "0.3.21" %}
-{% set build_number = "0" %}
-{% set sha_hash = "f36ba3d7a60e7c8bcc54cd9aaa9b1223dd42eaf02c811791c37e8ca707c241ca" %}
+{% set version = "0.3.20" %}
+{% set build_number = "1" %}
+{% set sha_hash = "8495c9affc536253648e942908e88e097f2ec7753ede55aca52e5dead3029e3c" %}
 
 
 package:
@@ -12,14 +12,23 @@ source:
   url: https://github.com/xianyi/OpenBLAS/archive/v{{ version }}.tar.gz
   sha256: {{ sha_hash }}
   patches:
-    # backport xianyi/OpenBLAS#3718 to fix tests on PPC + INTERFACE64 (2 commits)
-    - patches/0001-Use-blasint-for-INTERFACE64-compatibility.patch
-    - patches/0002-remove-spurious-loops.patch
-    # backport xianyi/OpenBLAS#3721 to fix linkage errors on OSX
-    - patches/0003-Fix-building-tests-when-NOFORTRAN-is-not-given-at-al.patch
+    # - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
+    # new in 0.3 series
+    # requires glibc >=2.21; disable for the foreseeable future.
+    #   https://github.com/xianyi/OpenBLAS/blob/dbfd7524cd94fe15930ed2f78b7789f15b22fec0/Makefile.rule#L112-L116
+    # Also, see # https://github.com/xianyi/OpenBLAS/issues/1761
+    # - 0003-turn-TLS-off.patch
+    #- gh2111.patch
+    #- 0004-fix-loader_path.patch
+    # fix openmp issue in fortran code for lapack about wrong width of argument on omp call
+    # Additional make sure FMA3 from system is used only for recent gcc compilers. So on OSX
+    # we won't use possibly not available (or different ABI having) system FMA implementation.
+    # update: this was upstreamed in v0.3.18
+    # - 0005-nan.patch
 
 build:
   number: {{ build_number }}
+  # trigger: 1
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
