@@ -1,6 +1,6 @@
-{% set version = "0.3.20" %}
-{% set build_number = "1" %}
-{% set sha_hash = "8495c9affc536253648e942908e88e097f2ec7753ede55aca52e5dead3029e3c" %}
+{% set version = "0.3.21" %}
+{% set build_number = "0" %}
+{% set sha_hash = "f36ba3d7a60e7c8bcc54cd9aaa9b1223dd42eaf02c811791c37e8ca707c241ca" %}
 
 
 package:
@@ -28,7 +28,6 @@ source:
 
 build:
   number: {{ build_number }}
-  # trigger: 1
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
