@@ -1,6 +1,6 @@
-{% set version = "0.3.20" %}
-{% set build_number = "1" %}
-{% set sha_hash = "8495c9affc536253648e942908e88e097f2ec7753ede55aca52e5dead3029e3c" %}
+{% set version = "0.3.21" %}
+{% set build_number = "0" %}
+{% set sha_hash = "f36ba3d7a60e7c8bcc54cd9aaa9b1223dd42eaf02c811791c37e8ca707c241ca" %}
 
 
 package:
@@ -12,23 +12,14 @@ source:
   url: https://github.com/xianyi/OpenBLAS/archive/v{{ version }}.tar.gz
   sha256: {{ sha_hash }}
   patches:
-    # - 0002-Fix-gfortran-detection-for-ctng-based-cross-compilers.patch
-    # new in 0.3 series
-    # requires glibc >=2.21; disable for the foreseeable future.
-    #   https://github.com/xianyi/OpenBLAS/blob/dbfd7524cd94fe15930ed2f78b7789f15b22fec0/Makefile.rule#L112-L116
-    # Also, see # https://github.com/xianyi/OpenBLAS/issues/1761
-    # - 0003-turn-TLS-off.patch
-    #- gh2111.patch
-    #- 0004-fix-loader_path.patch
-    # fix openmp issue in fortran code for lapack about wrong width of argument on omp call
-    # Additional make sure FMA3 from system is used only for recent gcc compilers. So on OSX
-    # we won't use possibly not available (or different ABI having) system FMA implementation.
-    # update: this was upstreamed in v0.3.18
-    # - 0005-nan.patch
+    # LAPACK tests are failing on osx-arm64 due to some issues with gfortran 11.2
+    # when set to armv8.3-a. This should be fixed when gfortran gets updated to 11.3.
+    # In the meantime we can use this workaround:
+    # See https://github.com/xianyi/OpenBLAS/issues/3735
+    - 0001-gfortran11.2_workaround_issue3753.patch # [osx and arm64]
 
 build:
   number: {{ build_number }}
-  # trigger: 1
   skip: true  # [win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
@@ -41,7 +32,6 @@ requirements:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - {{ compiler("fortran") }}
-    - perl
     - cmake                      # [win]
     - curl                       # [win]
     - jom                        # [win]
@@ -70,8 +60,9 @@ outputs:
         - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1    # [win]
     about:
       home: https://www.openblas.net/
-      license: BSD-3-clause
+      license: BSD-3-Clause
       license_file: LICENSE
+      license_family: BSD
       summary: An Optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
       doc_url: https://www.openblas.net/
@@ -89,8 +80,9 @@ outputs:
         - test -f ${PREFIX}/lib/libopenblas.a                            # [unix]
     about:
       home: https://www.openblas.net/
-      license: BSD-3-clause
+      license: BSD-3-Clause
       license_file: LICENSE
+      license_family: BSD
       summary: OpenBLAS static libraries.
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
       doc_url: https://www.openblas.net/
@@ -114,7 +106,15 @@ outputs:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - {{ pin_subpackage("nomkl", exact=True) }}
     about:
+      home: https://www.openblas.net/
+      license: BSD-3-Clause
+      license_file: LICENSE
+      license_family: BSD
       summary: OpenBLAS headers and libraries for developing software that used OpenBLAS.
+      description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
+      doc_url: https://www.openblas.net/
+      doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
+      dev_url: https://github.com/xianyi/OpenBLAS
 
   # openblas meta-package. It is better to require openblas-devel or libopenblas
   - name: openblas
@@ -127,7 +127,7 @@ outputs:
 
     about:
       home: https://www.openblas.net/
-      license: BSD-3-clause
+      license: BSD-3-Clause
       license_file:
         - LICENSE
         - lapack-netlib/LICENSE
