@@ -108,3 +108,8 @@ extra:
     - jakirkham
     - isuruf
     - h-vetinari
+
+  anaconda-services:
+    ref:  https://anaconda.zendesk.com/agent/tickets/38329
+    recipe-maintainers:
+      - ianaobi
