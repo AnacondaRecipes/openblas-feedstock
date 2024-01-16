@@ -1,5 +1,5 @@
 {% set version = "0.3.21" %}
-{% set build_number = "0" %}
+{% set build_number = "1" %}
 {% set sha_hash = "f36ba3d7a60e7c8bcc54cd9aaa9b1223dd42eaf02c811791c37e8ca707c241ca" %}
 
 
@@ -20,7 +20,7 @@ source:
 
 build:
   number: {{ build_number }}
-  skip: true  # [win]
+  skip: true  # [not win]
   missing_dso_whitelist:
     # Mildly concerned this triggers an overlinking warning, but it may be a
     # sign some S390X-specific changes needed in conda-build.  Leaving this in
@@ -39,6 +39,8 @@ requirements:
     - objconv                    # [osx]
     - patch                      # [unix]
     - m2-patch                   # [win]
+    - perl
+
 outputs:
   - name: libopenblas
     files:
@@ -47,17 +49,24 @@ outputs:
       - lib/liblapack{{ SHLIB_EXT }}  # [unix]
       - lib/libopenblas*.so*          # [linux]
       - lib/libopenblas*.dylib        # [osx]
+      - Library/bin/openblas.dll           # [win]
+    build:
+      run_exports:
+        - {{ pin_subpackage("libopenblas") }}
     requirements:
       build:
         - {{ compiler("c") }}
         - {{ compiler("cxx") }}
         - {{ compiler("fortran") }}
+      run_constrained:
+        - {{ pin_subpackage("openblas", max_pin="x.x.x") }}
     test:
       requires:
         - python      # [unix]
       commands:
         - python -c "import ctypes; ctypes.cdll['${PREFIX}/lib/libopenblas${SHLIB_EXT}']"  # [unix]
         - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1    # [win]
+        - if not exist %PREFIX%\\Library\\bin\\openblas.dll exit 1  # [win]
     about:
       home: https://www.openblas.net/
       license: BSD-3-Clause
@@ -118,12 +127,20 @@ outputs:
 
   # openblas meta-package. It is better to require openblas-devel or libopenblas
   - name: openblas
+    files:
+      - Library/include/openblas                          # [win]
+      - Library/lib/openblas.lib        # [win]
+      - Library/lib/pkgconfig/openblas.pc                 # [win]
+      - Library/share/cmake/OpenBLAS                      # [win]
     requirements:
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - {{ pin_subpackage("openblas-devel", exact=True) }}
         - {{ pin_subpackage("blas", exact=True) }}
         - {{ pin_subpackage("nomkl", exact=True) }}
+    test:
+      commands:
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1  # [win]
 
     about:
       home: https://www.openblas.net/
