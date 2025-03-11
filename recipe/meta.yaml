@@ -122,7 +122,7 @@ outputs:
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - {{ pin_subpackage("openblas-devel", exact=True) }}
-        - {{ pin_subpackage("blas", exact=True) }}
+        - blas=*=openblas
         - {{ pin_subpackage("nomkl", exact=True) }}
 
     about:
@@ -139,16 +139,19 @@ outputs:
       dev_url: https://github.com/xianyi/OpenBLAS
 
   # mutex package to keep only one blas implementation in a given env
-  - name: blas
-    version: 1.0
-    build:
-      string: openblas
-      # track_features doesn't really track anything anymore (blas metapackage
-      # dependencies do the same job better). This is still here, though, as it
-      # effectively "weighs down" nomkl packages, allowing mkl to take
-      # precedence when defaults is the top channel priority.
-      track_features:
-        - nomkl
+  # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
+  # with overwrites on the PBP. If an update to this package is needed in the future, the name should have a hash added
+  # so that it becomes unique per publish.
+#  - name: blas
+#    version: 1.0
+#    build:
+#      string: openblas
+#      # track_features doesn't really track anything anymore (blas metapackage
+#      # dependencies do the same job better). This is still here, though, as it
+#      # effectively "weighs down" nomkl packages, allowing mkl to take
+#      # precedence when defaults is the top channel priority.
+#      track_features:
+#        - nomkl
 
   - name: nomkl
     version: 3.0
