@@ -69,9 +69,6 @@ elif [[ "${target_platform}" == osx-arm64 ]]; then
 fi
 
 QUIET_MAKE=0
-if [[ "$CI" == "travis" ]]; then
-  QUIET_MAKE=1
-fi
 
 export HOSTCC=$CC_FOR_BUILD
 
@@ -80,15 +77,7 @@ if [[ "${target_platform}" == "osx-arm64" && "${build_platform}" != "osx-arm64" 
   OBJCONV="OBJCONV=objconv"
 fi
 
-if [[ "${CROSSCOMPILING_EMULATOR}" != "" ]]; then
-  # We'd like to set CROSS=0 for builds with an emulator in order to run tests,
-  # but as of 0.3.29 aarch64/ppc64 run into spurious emulation errors
-  CROSS=1
-elif [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" != "1" ]]; then
-  CROSS=0
-else
-  CROSS=1
-fi
+CROSS=0
 
 # Build LAPACK.
 build_opts+=(NO_LAPACK=0)
