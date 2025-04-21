@@ -12,9 +12,8 @@ source:
   url: https://github.com/OpenMathLib/OpenBLAS/archive/v{{ version }}.tar.gz
   sha256: 38240eee1b29e2bde47ebb5d61160207dc68668a54cac62c076bb5032013b1eb
   patches:
-    # don't run test_fork in emulation, it has a tendency to hang indefinitely
-    - patches/0001-don-t-run-test_fork-in-cross-compilation.patch  # [build_platform != target_platform]
-    - patches/0002-skip-fork-test-with-openmp.patch
+    # don't run test_fork, it has a tendency to hang indefinitely
+    - patches/0001-skip-fork-test-with-openmp.patch
 
 build:
   number: {{ build_number }}
@@ -30,6 +29,8 @@ requirements:
     - make                    # [not win]
     - cmake                   # [win]
     - ninja                   # [win]
+    - patch                   # [unix]
+    - m2-patch                # [win]
     - objconv                 # [osx]
     - llvm-openmp  # [USE_OPENMP == 1 and osx]
     - libgomp      # [USE_OPENMP == 1 and linux] 
@@ -101,14 +102,23 @@ outputs:
         - if not exist %PREFIX%\\Library\\lib\\openblas{{ SYMBOLSUFFIX }}.lib exit 1  # [win]
 
 about:
-  home: http://www.openblas.net/
+  home: http://www.openmathlib.org/OpenBLAS/
   license: BSD-3-Clause
+  license_family: BSD
   license_file:
     - LICENSE
     - lapack-netlib/LICENSE
   summary: An optimized BLAS library based on GotoBLAS2 1.13 BSD version  # [SYMBOLSUFFIX != "64_"]
   summary: An optimized BLAS library (ILP64 interface) based on GotoBLAS2 1.13 BSD version  # [SYMBOLSUFFIX == "64_"]
+  description: |
+    OpenBLAS implements low-level routines for performing linear algebra 
+    operations such as vector addition, scalar multiplication, dot products, 
+    linear combinations, and matrix multiplication. OpenBLAS makes these 
+    routines available on multiple platforms, covering server, desktop 
+    and mobile operating systems, as well as different architectures 
+    including x86, ARM, MIPS, PPC, RISC-V, and zarch.
   dev_url: https://github.com/OpenMathLib/OpenBLAS
+  doc_url: http://www.openmathlib.org/OpenBLAS/docs/
 
 extra:
   recipe-maintainers:
