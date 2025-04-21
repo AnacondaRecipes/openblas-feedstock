@@ -22,7 +22,6 @@ build:
 
 requirements:
   build:
-    - {{ stdlib("c") }}
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - {{ compiler("fortran") }}
@@ -50,7 +49,6 @@ outputs:
         - {{ pin_subpackage("libopenblas" ~ name_suffix) }}
     requirements:
       build:
-        - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
         - llvm-openmp                   # [USE_OPENMP == 1]
