@@ -1,0 +1,39 @@
+From 21670ca2c9f0b7f504fda46fc504cba104ae5c39 Mon Sep 17 00:00:00 2001
+From: Eric Lundby <Eric.Lundby@gmail.com>
+Date: Mon, 21 Apr 2025 14:53:13 -0600
+Subject: [PATCH 1/1] skip-fork-test-with-openmp
+
+---
+ utest/test_fork.c      | 2 +-
+ utest/test_post_fork.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/utest/test_fork.c b/utest/test_fork.c
+index 44a619349..32b6857c5 100644
+--- a/utest/test_fork.c
++++ b/utest/test_fork.c
+@@ -70,7 +70,7 @@ CTEST(fork, safety)
+ exit(0);
+ #endif
+ #endif
+-#ifndef BUILD_DOUBLE
++#if !defined(BUILD_DOUBLE) || defined(USE_OPENMP)
+ exit(0);
+ #else
+     blasint n = 1000;
+diff --git a/utest/test_post_fork.c b/utest/test_post_fork.c
+index d6e87f2ba..bdc76039e 100644
+--- a/utest/test_post_fork.c
++++ b/utest/test_post_fork.c
+@@ -73,7 +73,7 @@ CTEST(fork, safety_after_fork_in_parent)
+ exit(0);
+ #endif
+ #endif
+-#ifndef BUILD_DOUBLE
++#if !defined(BUILD_DOUBLE) || defined(USE_OPENMP)
+ exit(0);
+ #else
+     blasint n = 100;
+-- 
+2.39.5 (Apple Git-154)
+
