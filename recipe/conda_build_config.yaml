@@ -13,3 +13,8 @@ INTERFACE64:
 USE_OPENMP:
   - "0"    # [not osx]
   - "1"
+
+zip_keys:
+  - - SYMBOLSUFFIX
+    - name_suffix
+    - INTERFACE64
