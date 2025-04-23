@@ -29,7 +29,7 @@ export CF="${CFLAGS} -Wno-unused-parameter -Wno-old-style-declaration"
 unset CFLAGS
 
 if [[ "$USE_OPENMP" == "1" ]]; then
-    # Run the the fork test
+    # Run the fork test
     sed -i.bak 's/test_potrs.o/test_potrs.o test_fork.o/g' utest/Makefile
 fi
 
@@ -97,7 +97,7 @@ make install PREFIX="${PREFIX}" \
 
 if [[ "${target_platform}" == osx-arm64 ]]; then
   TARGET_LOWER=$(echo "$TARGET" | tr '[:upper:]' '[:lower:]')
-  ls -alh $PREFIX/lib/libopenblas*
+
   # Make sure the concrete library is libopenblas.0.dylib and there's a link for
   # libopenblas_vortexp-r${PKG_VERSION}.dylib for backwards compatibility
   rm $PREFIX/lib/libopenblas${SYMBOLSUFFIX}.0.dylib

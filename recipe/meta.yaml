@@ -1,9 +1,6 @@
 {% set version = "0.3.29" %}
 {% set build_number = 0 %}
 
-# ensure INTERFACE64 variable gets detected by conda-build
-# [INTERFACE64 == "foobar"]
-
 package:
   name: openblas-split
   version: {{ version }}
@@ -19,6 +16,7 @@ build:
   number: {{ build_number }}
   string: openmp_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 1]
   string: pthreads_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 0]
+  # Windows is skipped until we have LLVM 20 with flang (instead of flang-new)
   skip: true  # [win]
 
 requirements:
