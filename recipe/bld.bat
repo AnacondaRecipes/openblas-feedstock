@@ -15,9 +15,13 @@ if "%USE_OPENMP%"=="1" (
 :: millions of lines of warnings with clang-19
 set "CFLAGS=%CFLAGS% -w"
 
+:: Adhere to IEEE standard for floating-point arithmetic
+set "CFLAGS=%CFLAGS% /fp:strict"
+set "FFLAGS=%FFLAGS% /fp:strict"
+
 cmake -G "Ninja"                            ^
-    -DCMAKE_C_COMPILER=icx             ^
-    -DCMAKE_Fortran_COMPILER=ifx          ^
+    -DCMAKE_C_COMPILER=icx                  ^
+    -DCMAKE_Fortran_COMPILER=ifx            ^
     -DCMAKE_BUILD_TYPE=Release              ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
     -DDYNAMIC_ARCH=ON                       ^
