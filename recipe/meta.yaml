@@ -16,8 +16,6 @@ build:
   number: {{ build_number }}
   string: openmp_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 1]
   string: pthreads_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 0]
-  # Windows is skipped until we have LLVM 20 with flang (instead of flang-new)
-  skip: true  # [win]
 
 requirements:
   build:
@@ -31,10 +29,10 @@ requirements:
     - patch                   # [unix]
     - m2-patch                # [win]
     - objconv                 # [osx]
-    - llvm-openmp  # [USE_OPENMP == 1 and osx]
-    - libgomp      # [USE_OPENMP == 1 and linux] 
+    - llvm-openmp   # [USE_OPENMP == 1 and osx]
+    - libgomp       # [USE_OPENMP == 1 and linux] 
   host:
-    - llvm-openmp-fortran     # [win and USE_OPENMP == 1]
+    - intel-openmp  # [USE_OPENMP == 1 and win]
   run:
 
 outputs:
