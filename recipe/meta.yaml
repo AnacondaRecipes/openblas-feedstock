@@ -81,6 +81,9 @@ outputs:
       string: pthreads_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 0]
       track_features:
         - openblas_threading_openmp     # [(not osx) and USE_OPENMP == 1]
+    run_exports:
+      - {{ pin_subpackage("libopenblas" ~ name_suffix) }}
+      - blas * openblas
     files:
       - include/*.h                                       # [not win]
       - lib/libopenblas{{ SYMBOLSUFFIX }}*.a              # [not win]
@@ -94,12 +97,25 @@ outputs:
     requirements:
       run:
         - {{ pin_subpackage("libopenblas" ~ name_suffix, exact=True) }}
+        - nomkl
     test:
       commands:
         - test -f ${PREFIX}/lib/libopenblas{{ SYMBOLSUFFIX }}.a                       # [not win]
         - test -f ${PREFIX}/lib/libopenblas{{ SYMBOLSUFFIX }}{{ SHLIB_EXT }}          # [not win]
         - if not exist %PREFIX%\\Library\\lib\\openblas{{ SYMBOLSUFFIX }}.lib exit 1  # [win]
-
+  # Maintain compatibility with old package names
+  - name: openblas-devel{{ name_suffix }}
+    build:
+      string: openmp_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 1]
+      string: pthreads_h{{ PKG_HASH }}_{{ build_number }}  # [USE_OPENMP == 0]
+      track_features:
+        - openblas_threading_openmp     # [(not osx) and USE_OPENMP == 1]
+    requirements:
+      run:
+        - {{ pin_subpackage("openblas" ~ name_suffix, exact=True) }}
+        - nomkl
+    run_exports:
+      - blas * openblas
 about:
   home: http://www.openmathlib.org/OpenBLAS/
   license: BSD-3-Clause
