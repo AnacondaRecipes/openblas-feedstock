@@ -112,6 +112,7 @@ outputs:
         - openblas_threading_openmp     # [(not osx) and USE_OPENMP == 1]
     requirements:
       run:
+        - {{ pin_subpackage("libopenblas" ~ name_suffix) }}
         - {{ pin_subpackage("openblas" ~ name_suffix, exact=True) }}
         - nomkl
     run_exports:
