@@ -116,6 +116,7 @@ outputs:
         - nomkl
     run_exports:
       - blas * openblas
+      - {{ pin_subpackage("libopenblas" ~ name_suffix) }}
 about:
   home: http://www.openmathlib.org/OpenBLAS/
   license: BSD-3-Clause
