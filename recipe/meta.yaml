@@ -95,21 +95,23 @@ outputs:
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - {{ pin_subpackage("openblas-devel", exact=True) }}
-        - blas=*=openblas
+        - blas =*=openblas
         - nomkl
+    test:
+      commands:
+        - exit 0
 
-    about:
-      home: https://www.openblas.net/
-      license: BSD-3-Clause
-      license_file:
-        - LICENSE
-        - lapack-netlib/LICENSE
-      license_family: BSD
-      summary: An optimized BLAS library
-      description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-      doc_url: https://www.openblas.net/
-      doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
-      dev_url: https://github.com/xianyi/OpenBLAS
+about:
+  home: https://www.openblas.net/
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE
+    - lapack-netlib/LICENSE
+  license_family: BSD
+  summary: An optimized BLAS library
+  description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
+  doc_url: https://www.openblas.net/
+  dev_url: https://github.com/xianyi/OpenBLAS
 
   # mutex package to keep only one blas implementation in a given env
   # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
