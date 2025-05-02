@@ -70,6 +70,9 @@ outputs:
       - {{ pin_subpackage("libopenblas") }}
       - blas * openblas
     requirements:
+      build:
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - nomkl
