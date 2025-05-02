@@ -8,12 +8,6 @@ package:
 source:
   url: https://github.com/OpenMathLib/OpenBLAS/archive/v{{ version }}.tar.gz
   sha256: {{ sha_hash }}
-  patches:
-    # LAPACK tests are failing on osx-arm64 due to some issues with gfortran 11.2
-    # when set to armv8.3-a. This should be fixed when gfortran gets updated to 11.3.
-    # In the meantime we can use this workaround:
-    # See https://github.com/xianyi/OpenBLAS/issues/3735
-    - 0001-gfortran11.2_workaround_issue3753.patch # [osx and arm64]
 
 build:
   number: 0
@@ -30,8 +24,6 @@ requirements:
     - jom                        # [win]
     - make                       # [unix]
     - objconv                    # [osx]
-    - patch                      # [unix]
-    - m2-patch                   # [win]
 outputs:
   - name: libopenblas
     files:
