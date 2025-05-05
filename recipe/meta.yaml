@@ -27,9 +27,11 @@ requirements:
 outputs:
   - name: libopenblas
     files:
-      - lib/libopenblas*p*{{ SHLIB_EXT }}  # [not win]
-      - lib/libopenblas.so.*               # [linux]
-      - lib/libopenblas.*.dylib            # [osx]
+      - lib/libblas{{ SHLIB_EXT }}    # [unix]
+      - lib/libcblas{{ SHLIB_EXT }}   # [unix]
+      - lib/liblapack{{ SHLIB_EXT }}  # [unix]
+      - lib/libopenblas*.so*          # [linux]
+      - lib/libopenblas*.dylib        # [osx]
       - Library/bin/openblas.dll           # [win]
     requirements:
       build:
@@ -57,15 +59,13 @@ outputs:
 
   - name: openblas-devel
     files:
-      - include/*.h                                       # [not win]
-      - lib/libopenblas*.a              # [not win]
-      - lib/libopenblas{{ SHLIB_EXT }}  # [not win]
-      - lib/pkgconfig/openblas.pc                         # [not win]
-      - lib/cmake/openblas/*                              # [not win]
-      - Library/include/openblas                          # [win]
-      - Library/lib/openblas.lib        # [win]
-      - Library/lib/pkgconfig/openblas.pc                 # [win]
-      - Library/share/cmake/OpenBLAS                      # [win]
+      - include/*blas.h
+      - include/lapack*.h
+      - include/openblas_config.h
+      - lib/cmake/openblas
+      - lib/pkgconfig/*blas.pc
+      - lib/pkgconfig/lapack*.pc
+      - site.cfg
     run_exports:
       - {{ pin_subpackage("libopenblas") }}
       - blas * openblas
@@ -78,8 +78,10 @@ outputs:
         - nomkl
     test:
       commands:
-        - test -f ${PREFIX}/lib/libopenblas.a                       # [not win]
-        - test -f ${PREFIX}/lib/libopenblas{{ SHLIB_EXT }}          # [not win]
+        - test -f ${PREFIX}/lib/pkgconfig/blas.pc                       # [not win]
+        - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                      # [not win]
+        - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                     # [not win]
+        - test -f ${PREFIX}/site.cfg                                    # [not win]
         - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1  # [win]
     about:
       home: https://www.openblas.net/
