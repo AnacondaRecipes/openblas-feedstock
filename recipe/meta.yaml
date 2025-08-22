@@ -32,7 +32,8 @@ outputs:
       - lib/liblapack{{ SHLIB_EXT }}  # [unix]
       - lib/libopenblas*.so*          # [linux]
       - lib/libopenblas*.dylib        # [osx]
-      - Library/bin/openblas.dll           # [win]
+      - Library/bin/openblas.dll      # [win]
+      - Library/lib/openblas.lib      # [win]
     requirements:
       build:
         - {{ stdlib("c") }}
@@ -46,6 +47,7 @@ outputs:
         - nm -g ${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }} | grep dsecnd                        # [osx and build_platform=="osx-64"]
         - python -c "import ctypes; ctypes.cdll['${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }}']"  # [not win]
         - if not exist %PREFIX%\\Library\\bin\\openblas.dll exit 1                                            # [win]
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                                            # [win]
 
     about:
       home: https://www.openblas.net/
@@ -86,7 +88,6 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                      # [not win]
         - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                     # [not win]
         - test -f ${PREFIX}/site.cfg                                    # [not win]
-        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1  # [win]
     about:
       home: https://www.openblas.net/
       license: BSD-3-Clause
