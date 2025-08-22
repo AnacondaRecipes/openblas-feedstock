@@ -10,8 +10,9 @@ source:
   sha256: {{ sha_hash }}
 
 build:
-  number: 0
-  skip: true  # [win]
+  number: 1
+  # TODO
+  skip: true  # [not win]
 
 requirements:
   build:
