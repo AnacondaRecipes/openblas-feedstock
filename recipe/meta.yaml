@@ -11,11 +11,10 @@ source:
 
 build:
   number: 1
-  # TODO
-  skip: true  # [not win]
 
 requirements:
   build:
+    - {{ stdlib("c") }}
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - {{ compiler("fortran") }}
@@ -36,6 +35,7 @@ outputs:
       - Library/bin/openblas.dll           # [win]
     requirements:
       build:
+        - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
     test:
@@ -72,8 +72,11 @@ outputs:
       - blas * openblas
     requirements:
       build:
+        - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
+      host:
+        - {{ pin_subpackage("libopenblas", exact=True) }}
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - nomkl
@@ -98,6 +101,8 @@ outputs:
   # openblas meta-package. It is better to require openblas-devel or libopenblas
   - name: openblas
     requirements:
+      host:
+        - {{ pin_subpackage("libopenblas", exact=True) }}
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - {{ pin_subpackage("openblas-devel", exact=True) }}
@@ -106,6 +111,34 @@ outputs:
     test:
       commands:
         - exit 0
+
+    # mutex package to keep only one blas implementation in a given env
+    # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
+    # with overwrites on the PBP. If an update to this package is needed in the future, the name should have a hash added
+    # so that it becomes unique per publish.
+  - name: blas
+    version: 1.0
+    build:
+      string: openblas
+      skip: true  # [not win]
+      # track_features doesn't really track anything anymore (blas metapackage
+      # dependencies do the same job better). This is still here, though, as it
+      # effectively "weighs down" nomkl packages, allowing mkl to take
+      # precedence when defaults is the top channel priority.
+      track_features:
+        - nomkl
+
+  - name: nomkl
+    version: 3.0
+    build:
+      string: "0"
+      number: 0
+      skip: true  # [not win]
+    requirements:
+      run:
+        - blas * openblas
+    about:
+      license: BSD-3-clause
 
 about:
   home: https://www.openblas.net/
@@ -118,32 +151,6 @@ about:
   description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
   doc_url: https://www.openblas.net/
   dev_url: https://github.com/xianyi/OpenBLAS
-
-  # mutex package to keep only one blas implementation in a given env
-  # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
-  # with overwrites on the PBP. If an update to this package is needed in the future, the name should have a hash added
-  # so that it becomes unique per publish.
-#  - name: blas
-#    version: 1.0
-#    build:
-#      string: openblas
-#      # track_features doesn't really track anything anymore (blas metapackage
-#      # dependencies do the same job better). This is still here, though, as it
-#      # effectively "weighs down" nomkl packages, allowing mkl to take
-#      # precedence when defaults is the top channel priority.
-#      track_features:
-#        - nomkl
-
-  # - name: nomkl
-  #   version: 3.0
-  #   build:
-  #     string: "0"
-  #     number: 0
-  #   requirements:
-  #     run:
-  #       - blas * openblas
-  #   about:
-  #     license: BSD-3-clause
 
 extra:
   recipe-maintainers:
