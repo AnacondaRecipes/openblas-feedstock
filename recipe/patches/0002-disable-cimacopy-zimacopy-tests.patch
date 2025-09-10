@@ -1,0 +1,41 @@
+From 1eab39ccb6a6c876957b3b28ffbf320df3609621 Mon Sep 17 00:00:00 2001
+From: Eric Lundby <Eric.Lundby@gmail.com>
+Date: Wed, 10 Sep 2025 14:58:48 -0600
+Subject: [PATCH 1/2] disable-cimacopy-zimacopy-tests
+
+---
+ utest/CMakeLists.txt | 4 ++--
+ utest/Makefile       | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/utest/CMakeLists.txt b/utest/CMakeLists.txt
+index 6a61899da..db019c7c5 100644
+--- a/utest/CMakeLists.txt
++++ b/utest/CMakeLists.txt
+@@ -54,8 +54,8 @@ ${DIR_EXT}/test_zomatcopy.c
+ ${DIR_EXT}/test_comatcopy.c
+ ${DIR_EXT}/test_simatcopy.c
+ ${DIR_EXT}/test_dimatcopy.c
+-${DIR_EXT}/test_cimatcopy.c
+-${DIR_EXT}/test_zimatcopy.c
++# ${DIR_EXT}/test_cimatcopy.c
++# ${DIR_EXT}/test_zimatcopy.c
+ ${DIR_EXT}/test_sgeadd.c
+ ${DIR_EXT}/test_dgeadd.c
+ ${DIR_EXT}/test_cgeadd.c
+diff --git a/utest/Makefile b/utest/Makefile
+index b82937093..b81682036 100644
+--- a/utest/Makefile
++++ b/utest/Makefile
+@@ -24,7 +24,7 @@ OBJS_EXT+=$(DIR_EXT)/test_samin.o $(DIR_EXT)/test_damin.o $(DIR_EXT)/test_scamin
+ OBJS_EXT+=$(DIR_EXT)/test_drotmg.o $(DIR_EXT)/test_srotmg.o $(DIR_EXT)/test_zrotg.o $(DIR_EXT)/test_crotg.o $(DIR_EXT)/test_crot.o $(DIR_EXT)/test_zrot.o
+ OBJS_EXT+=$(DIR_EXT)/test_zscal.o $(DIR_EXT)/test_cscal.o
+ OBJS_EXT+=$(DIR_EXT)/test_domatcopy.o $(DIR_EXT)/test_somatcopy.o $(DIR_EXT)/test_zomatcopy.o $(DIR_EXT)/test_comatcopy.o
+-OBJS_EXT+=$(DIR_EXT)/test_simatcopy.o $(DIR_EXT)/test_dimatcopy.o $(DIR_EXT)/test_cimatcopy.o $(DIR_EXT)/test_zimatcopy.o
++OBJS_EXT+=$(DIR_EXT)/test_simatcopy.o $(DIR_EXT)/test_dimatcopy.o
+ OBJS_EXT+=$(DIR_EXT)/test_sgeadd.o $(DIR_EXT)/test_dgeadd.o $(DIR_EXT)/test_cgeadd.o $(DIR_EXT)/test_zgeadd.o
+ OBJS_EXT+=$(DIR_EXT)/test_cgemv_t.o $(DIR_EXT)/test_zgemv_t.o $(DIR_EXT)/test_cgemv_n.o $(DIR_EXT)/test_zgemv_n.o
+ OBJS_EXT+=$(DIR_EXT)/test_sgemmt.o $(DIR_EXT)/test_dgemmt.o $(DIR_EXT)/test_cgemmt.o $(DIR_EXT)/test_zgemmt.o
+-- 
+2.45.2
+

@@ -1,0 +1,28 @@
+From 159af2287e199a02b8053dd9e0b48897fdd5de11 Mon Sep 17 00:00:00 2001
+From: Eric Lundby <Eric.Lundby@gmail.com>
+Date: Wed, 10 Sep 2025 14:42:11 -0600
+Subject: [PATCH 1/2] remove-ld_classic-flag
+
+---
+ Makefile.system | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/Makefile.system b/Makefile.system
+index 38646c3c6..d1bfa88aa 100644
+--- a/Makefile.system
++++ b/Makefile.system
+@@ -432,10 +432,7 @@ XCVER = $(shell pkgutil --pkg-info=com.apple.pkg.Xcode |awk '/version:/ {print $
+ ifeq (x$(XCVER)x,xx)
+ XCVER = $(shell pkgutil --pkg-info=com.apple.pkg.CLTools_Executables |awk '/version:/ {print $2}'|cut -d: -f2|cut -f1 -d.)
+ endif
+-ifeq (x$(XCVER), x 15)
+-CCOMMON_OPT += -Wl,-ld_classic
+-FCOMMON_OPT += -Wl,-ld_classic
+-endif
++
+ ifeq (x$(XCVER), x 16)
+ ifeq ($(F_COMPILER), GFORTRAN)
+ override CEXTRALIB := $(filter-out(-lto_library, $(CEXTRALIB))) 
+-- 
+2.45.2
+

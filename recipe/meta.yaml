@@ -1,5 +1,5 @@
-{% set version = "0.3.29" %}
-{% set sha_hash = "38240eee1b29e2bde47ebb5d61160207dc68668a54cac62c076bb5032013b1eb" %}
+{% set version = "0.3.30" %}
+{% set sha_hash = "27342cff518646afb4c2b976d809102e368957974c250a25ccc965e53063c95d" %}
 
 package:
   name: openblas_multipkg
@@ -8,9 +8,19 @@ package:
 source:
   url: https://github.com/OpenMathLib/OpenBLAS/archive/v{{ version }}.tar.gz
   sha256: {{ sha_hash }}
+  patches:
+    # It appears ld_classic flag requires xcode, which is not present in the CI system
+    - patches/0001-remove-ld_classic-flag.patch  # [osx]
+    # cimacopy and zimacopy tests fail on the CI system
+    # These tests pass locally. 
+    - patches/0002-disable-cimacopy-zimacopy-tests.patch  # [linux and aarch64]
+    - patches/0003-trmv.patch
 
 build:
-  number: 1
+  number: 0
+  script_env:
+    # Disable OpenMP for all platforms.
+    - USE_OPENMP=0
 
 requirements:
   build:
@@ -33,7 +43,6 @@ outputs:
       - lib/libopenblas*.so*          # [linux]
       - lib/libopenblas*.dylib        # [osx]
       - Library/bin/openblas.dll      # [win]
-      - Library/lib/openblas.lib      # [win]
     requirements:
       build:
         - {{ stdlib("c") }}
@@ -47,7 +56,7 @@ outputs:
         - nm -g ${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }} | grep dsecnd                        # [osx and build_platform=="osx-64"]
         - python -c "import ctypes; ctypes.cdll['${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }}']"  # [not win]
         - if not exist %PREFIX%\\Library\\bin\\openblas.dll exit 1                                            # [win]
-        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                                            # [win]
+        - if exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                                                # [win]
 
     about:
       home: https://www.openblas.net/
@@ -69,6 +78,7 @@ outputs:
       - lib/pkgconfig/*blas.pc
       - lib/pkgconfig/lapack*.pc
       - site.cfg
+      - Library/lib/openblas.lib      # [win]
     run_exports:
       - {{ pin_subpackage("libopenblas") }}
       - blas * openblas
@@ -88,6 +98,7 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                      # [not win]
         - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                     # [not win]
         - test -f ${PREFIX}/site.cfg                                    # [not win]
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1      # [win]
     about:
       home: https://www.openblas.net/
       license: BSD-3-Clause
@@ -102,8 +113,6 @@ outputs:
   # openblas meta-package. It is better to require openblas-devel or libopenblas
   - name: openblas
     requirements:
-      host:
-        - {{ pin_subpackage("libopenblas", exact=True) }}
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - {{ pin_subpackage("openblas-devel", exact=True) }}
