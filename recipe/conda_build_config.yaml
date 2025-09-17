@@ -1,0 +1,14 @@
+fortran_compiler:          # [win]
+  - flang                  # [win]
+fortran_compiler_version:  # [win]
+  - 20.1.8                 # [win]
+
+c_compiler:                # [win]
+  - clang                  # [win]
+cxx_compiler:              # [win]
+  - clang                  # [win]
+
+c_compiler_version:        # [win]
+  - 20.1.8                 # [win]
+cxx_compiler_version:      # [win]
+  - 20.1.8                 # [win]

@@ -1,5 +1,5 @@
-{% set version = "0.3.29" %}
-{% set sha_hash = "38240eee1b29e2bde47ebb5d61160207dc68668a54cac62c076bb5032013b1eb" %}
+{% set version = "0.3.30" %}
+{% set sha_hash = "27342cff518646afb4c2b976d809102e368957974c250a25ccc965e53063c95d" %}
 
 package:
   name: openblas_multipkg
@@ -8,13 +8,23 @@ package:
 source:
   url: https://github.com/OpenMathLib/OpenBLAS/archive/v{{ version }}.tar.gz
   sha256: {{ sha_hash }}
+  patches:
+    # It appears ld_classic flag requires xcode, which is not present in the CI system
+    - patches/0001-remove-ld_classic-flag.patch  # [osx]
+    # cimacopy and zimacopy tests fail on the CI system
+    # These tests pass locally. 
+    - patches/0002-disable-cimacopy-zimacopy-tests.patch  # [linux and aarch64]
+    - patches/0003-trmv.patch
 
 build:
   number: 0
-  skip: true  # [win]
+  script_env:
+    # Disable OpenMP for all platforms.
+    - USE_OPENMP=0
 
 requirements:
   build:
+    - {{ stdlib("c") }}
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - {{ compiler("fortran") }}
@@ -32,9 +42,10 @@ outputs:
       - lib/liblapack{{ SHLIB_EXT }}  # [unix]
       - lib/libopenblas*.so*          # [linux]
       - lib/libopenblas*.dylib        # [osx]
-      - Library/bin/openblas.dll           # [win]
+      - Library/bin/openblas.dll      # [win]
     requirements:
       build:
+        - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
     test:
@@ -45,6 +56,7 @@ outputs:
         - nm -g ${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }} | grep dsecnd                        # [osx and build_platform=="osx-64"]
         - python -c "import ctypes; ctypes.cdll['${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }}']"  # [not win]
         - if not exist %PREFIX%\\Library\\bin\\openblas.dll exit 1                                            # [win]
+        - if exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                                                # [win]
 
     about:
       home: https://www.openblas.net/
@@ -66,13 +78,17 @@ outputs:
       - lib/pkgconfig/*blas.pc
       - lib/pkgconfig/lapack*.pc
       - site.cfg
+      - Library/lib/openblas.lib      # [win]
     run_exports:
       - {{ pin_subpackage("libopenblas") }}
       - blas * openblas
     requirements:
       build:
+        - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
+      host:
+        - {{ pin_subpackage("libopenblas", exact=True) }}
       run:
         - {{ pin_subpackage("libopenblas", exact=True) }}
         - nomkl
@@ -82,7 +98,7 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                      # [not win]
         - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                     # [not win]
         - test -f ${PREFIX}/site.cfg                                    # [not win]
-        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1  # [win]
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1      # [win]
     about:
       home: https://www.openblas.net/
       license: BSD-3-Clause
@@ -106,6 +122,34 @@ outputs:
       commands:
         - exit 0
 
+    # mutex package to keep only one blas implementation in a given env
+    # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
+    # with overwrites on the PBP. If an update to this package is needed in the future, the name should have a hash added
+    # so that it becomes unique per publish.
+  - name: blas
+    version: 1.0
+    build:
+      string: openblas
+      skip: true  # [not win]
+      # track_features doesn't really track anything anymore (blas metapackage
+      # dependencies do the same job better). This is still here, though, as it
+      # effectively "weighs down" nomkl packages, allowing mkl to take
+      # precedence when defaults is the top channel priority.
+      track_features:
+        - nomkl
+
+  - name: nomkl
+    version: 3.0
+    build:
+      string: "0"
+      number: 0
+      skip: true  # [not win]
+    requirements:
+      run:
+        - blas * openblas
+    about:
+      license: BSD-3-clause
+
 about:
   home: https://www.openblas.net/
   license: BSD-3-Clause
@@ -117,32 +161,6 @@ about:
   description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
   doc_url: https://www.openblas.net/
   dev_url: https://github.com/xianyi/OpenBLAS
-
-  # mutex package to keep only one blas implementation in a given env
-  # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
-  # with overwrites on the PBP. If an update to this package is needed in the future, the name should have a hash added
-  # so that it becomes unique per publish.
-#  - name: blas
-#    version: 1.0
-#    build:
-#      string: openblas
-#      # track_features doesn't really track anything anymore (blas metapackage
-#      # dependencies do the same job better). This is still here, though, as it
-#      # effectively "weighs down" nomkl packages, allowing mkl to take
-#      # precedence when defaults is the top channel priority.
-#      track_features:
-#        - nomkl
-
-  # - name: nomkl
-  #   version: 3.0
-  #   build:
-  #     string: "0"
-  #     number: 0
-  #   requirements:
-  #     run:
-  #       - blas * openblas
-  #   about:
-  #     license: BSD-3-clause
 
 extra:
   recipe-maintainers:

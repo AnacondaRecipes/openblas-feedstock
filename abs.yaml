@@ -1,5 +1,6 @@
-# the conda-build parameters to use for disabling --skip-existing
+# It's critical to leave skip-existing enabled.
+# The blas/nomkl meta-packages should not be overwritten.
 build_parameters:
   - "--suppress-variables"
+  - "--skip-existing"
   - "--error-overlinking"
-  
