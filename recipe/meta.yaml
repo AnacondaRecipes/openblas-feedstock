@@ -15,9 +15,11 @@ source:
     # These tests pass locally. 
     - patches/0002-disable-cimacopy-zimacopy-tests.patch  # [linux and aarch64]
     - patches/0003-trmv.patch
+    # Remove once https://github.com/OpenMathLib/OpenBLAS/issues/5414 is resolved. 
+    - patches/0004-disable-sme-sgemm-kernel.patch
 
 build:
-  number: 0
+  number: 1
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
