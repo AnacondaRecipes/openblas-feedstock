@@ -1,0 +1,27 @@
+From e8a65305ffc1c1e1b655383e72c2645b98a9c09d Mon Sep 17 00:00:00 2001
+From: Eric Lundby <Eric.Lundby@gmail.com>
+Date: Tue, 11 Nov 2025 10:54:00 -0700
+Subject: [PATCH] disable-sme-on-apple-silicon
+
+---
+ driver/others/dynamic_arm64.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/driver/others/dynamic_arm64.c b/driver/others/dynamic_arm64.c
+index 70b51f6fc..4d7b5744a 100644
+--- a/driver/others/dynamic_arm64.c
++++ b/driver/others/dynamic_arm64.c
+@@ -538,8 +538,8 @@ int support_sme1(void) {
+         }
+ #endif
+ #if defined(__APPLE__)
+-	sysctlbyname("hw.optional.arm.FEAT_SME",&value64,&length64,NULL,0);
+-	ret = value64;
++  // Numba team discovered `float32` matrix-matrix multiply is broken on Apple Silicon with SME extensions (M4 and above)
++	ret = 0;
+ #endif
+        return ret;
+ }
+-- 
+2.50.1 (Apple Git-155)
+
