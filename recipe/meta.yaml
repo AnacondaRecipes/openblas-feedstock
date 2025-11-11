@@ -15,9 +15,11 @@ source:
     # These tests pass locally. 
     - patches/0002-disable-cimacopy-zimacopy-tests.patch  # [linux and aarch64]
     - patches/0003-trmv.patch
+    # Remove once https://github.com/OpenMathLib/OpenBLAS/issues/5414 is resolved. 
+    - patches/0004-disable-sme-sgemm-kernel.patch
 
 build:
-  number: 0
+  number: 1
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -126,29 +128,29 @@ outputs:
     # Since this package has a non-unique name, blas-1.0-openblas.conda, it is omitted from future updates as they cause issues
     # with overwrites on the PBP. If an update to this package is needed in the future, the name should have a hash added
     # so that it becomes unique per publish.
-  - name: blas
-    version: 1.0
-    build:
-      string: openblas
-      skip: true  # [not win]
-      # track_features doesn't really track anything anymore (blas metapackage
-      # dependencies do the same job better). This is still here, though, as it
-      # effectively "weighs down" nomkl packages, allowing mkl to take
-      # precedence when defaults is the top channel priority.
-      track_features:
-        - nomkl
+  # - name: blas
+  #   version: 1.0
+  #   build:
+  #     string: openblas
+  #     skip: true
+  #     # track_features doesn't really track anything anymore (blas metapackage
+  #     # dependencies do the same job better). This is still here, though, as it
+  #     # effectively "weighs down" nomkl packages, allowing mkl to take
+  #     # precedence when defaults is the top channel priority.
+  #     track_features:
+  #       - nomkl
 
-  - name: nomkl
-    version: 3.0
-    build:
-      string: "0"
-      number: 0
-      skip: true  # [not win]
-    requirements:
-      run:
-        - blas * openblas
-    about:
-      license: BSD-3-clause
+  # - name: nomkl
+  #   version: 3.0
+  #   build:
+  #     string: "0"
+  #     number: 0
+  #     skip: true
+  #   requirements:
+  #     run:
+  #       - blas * openblas
+  #   about:
+  #     license: BSD-3-clause
 
 about:
   home: https://www.openblas.net/

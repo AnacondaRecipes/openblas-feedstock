@@ -8,7 +8,9 @@ c_compiler:                # [win]
 cxx_compiler:              # [win]
   - clang                  # [win]
 
-c_compiler_version:        # [win]
+c_compiler_version:
   - 20.1.8                 # [win]
-cxx_compiler_version:      # [win]
+  - 17                     # [osx]
+cxx_compiler_version:
   - 20.1.8                 # [win]
+  - 17                     # [osx]
