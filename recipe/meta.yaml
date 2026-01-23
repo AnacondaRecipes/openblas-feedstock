@@ -19,7 +19,7 @@ source:
     - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 2
+  number: 3
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -76,11 +76,15 @@ outputs:
       - include/*blas.h
       - include/lapack*.h
       - include/openblas_config.h
-      - lib/cmake/openblas
-      - lib/pkgconfig/*blas.pc
-      - lib/pkgconfig/lapack*.pc
-      - site.cfg
-      - Library/lib/openblas.lib      # [win]
+      - lib/cmake/openblas                    # [not win]
+      - lib/pkgconfig/*blas.pc                # [not win]
+      - lib/pkgconfig/lapack*.pc              # [not win]
+      - Library/lib/cmake/openblas            # [win]
+      - Library/lib/pkgconfig/*blas.pc        # [win]
+      - Library/lib/pkgconfig/lapack*.pc      # [win]
+      - site.cfg                              # [not win]
+      - Library/site.cfg                      # [win]
+      - Library/lib/openblas.lib              # [win]
     run_exports:
       - {{ pin_subpackage("libopenblas") }}
       - blas * openblas
@@ -96,11 +100,15 @@ outputs:
         - nomkl
     test:
       commands:
-        - test -f ${PREFIX}/lib/pkgconfig/blas.pc                       # [not win]
-        - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                      # [not win]
-        - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                     # [not win]
-        - test -f ${PREFIX}/site.cfg                                    # [not win]
-        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1      # [win]
+        - test -f ${PREFIX}/lib/pkgconfig/blas.pc                          # [not win]
+        - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                         # [not win]
+        - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                        # [not win]
+        - test -f ${PREFIX}/site.cfg                                       # [not win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\blas.pc exit 1    # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\cblas.pc exit 1   # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\lapack.pc exit 1  # [win]
+        - if not exist %PREFIX%\\Library\\site.cfg exit 1                   # [win]
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1          # [win]
     about:
       home: https://www.openblas.net/
       license: BSD-3-Clause

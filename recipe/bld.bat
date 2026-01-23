@@ -26,12 +26,29 @@ cmake -G "Ninja"                            ^
     -DNUM_THREADS=128                       ^
     -DBUILD_SHARED_LIBS=on                  ^
     -DUSE_OPENMP=%USE_OPENMP%               ^
+    -DBUILD_PKGCONFIG=ON                    ^
     !CMAKE_EXTRA!                           ^
     %SRC_DIR%
 if %ERRORLEVEL% neq 0 exit 1
 
 cmake --build . --target install
 if %ERRORLEVEL% neq 0 exit 1
+
+REM Create pkg-config files for standard BLAS/CBLAS/LAPACK names
+REM This mirrors what the Unix build does in build.sh lines 171-175
+mkdir "%LIBRARY_PREFIX%\lib\pkgconfig" 2>nul
+if exist "%LIBRARY_PREFIX%\lib\pkgconfig\openblas.pc" (
+    copy "%LIBRARY_PREFIX%\lib\pkgconfig\openblas.pc" "%LIBRARY_PREFIX%\lib\pkgconfig\blas.pc"
+    copy "%LIBRARY_PREFIX%\lib\pkgconfig\openblas.pc" "%LIBRARY_PREFIX%\lib\pkgconfig\cblas.pc"  
+    copy "%LIBRARY_PREFIX%\lib\pkgconfig\openblas.pc" "%LIBRARY_PREFIX%\lib\pkgconfig\lapack.pc"
+)
+
+REM Create site.cfg file for numpy compatibility  
+REM This mirrors what the Unix build does in build.sh lines 186-189
+copy "%RECIPE_DIR%\site.cfg" "%LIBRARY_PREFIX%\site.cfg"
+echo library_dirs = %LIBRARY_PREFIX%\lib >> "%LIBRARY_PREFIX%\site.cfg"
+echo include_dirs = %LIBRARY_PREFIX%\include >> "%LIBRARY_PREFIX%\site.cfg"  
+echo runtime_include_dirs = %LIBRARY_PREFIX%\lib >> "%LIBRARY_PREFIX%\site.cfg"
 
 ctest -j2
 if %ERRORLEVEL% neq 0 exit 1
