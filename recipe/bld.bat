@@ -16,10 +16,12 @@ set "CFLAGS=%CFLAGS% -w"
 
 cmake -G "Ninja"                            ^
     -DCMAKE_C_COMPILER=clang-cl             ^
+    -DCMAKE_CXX_COMPILER=clang-cl           ^
     -DCMAKE_Fortran_COMPILER=flang          ^
     -DCMAKE_BUILD_TYPE=Release              ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
-    -DDYNAMIC_ARCH=ON                       ^
+    -DDYNAMIC_ARCH=OFF                      ^
+    -DTARGET=ARMV8                          ^
     -DBUILD_WITHOUT_LAPACK=no               ^
     -DNO_AVX512=1                           ^
     -DNOFORTRAN=0                           ^
