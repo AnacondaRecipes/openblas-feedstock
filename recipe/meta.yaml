@@ -10,7 +10,7 @@ source:
   sha256: {{ sha_hash }}
   patches:
     # It appears ld_classic flag requires xcode, which is not present in the CI system
-    # - patches/0001-remove-ld_classic-flag.patch  # [osx]
+    - patches/0001-remove-ld_classic-flag.patch  # [osx]
     # cimacopy and zimacopy tests fail on the CI system
     # These tests pass locally. 
     - patches/0002-disable-cimacopy-zimacopy-tests.patch  # [linux and aarch64]
