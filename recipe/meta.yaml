@@ -19,7 +19,7 @@ source:
     - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 1
+  number: 2
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -73,9 +73,12 @@ outputs:
 
   - name: openblas-devel
     files:
-      - include/*blas.h
-      - include/lapack*.h
-      - include/openblas_config.h
+      - include/*blas.h                       # [not win]
+      - include/lapack*.h                     # [not win]
+      - include/openblas_config.h             # [not win]
+      - Library/include/openblas/*blas.h      # [win]
+      - Library/include/openblas/lapack*.h    # [win]
+      - Library/include/openblas/openblas_config.h  # [win]
       - lib/cmake/openblas                    # [not win]
       - lib/pkgconfig/*blas.pc                # [not win]
       - lib/pkgconfig/lapack*.pc              # [not win]
@@ -104,11 +107,13 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                         # [not win]
         - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                        # [not win]
         - test -f ${PREFIX}/site.cfg                                       # [not win]
-        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\blas.pc exit 1    # [win]
-        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\cblas.pc exit 1   # [win]
-        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\lapack.pc exit 1  # [win]
-        - if not exist %PREFIX%\\Library\\site.cfg exit 1                   # [win]
-        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1          # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\blas.pc exit 1              # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\cblas.pc exit 1             # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\lapack.pc exit 1            # [win]
+        - if not exist %PREFIX%\\Library\\site.cfg exit 1                             # [win]
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                    # [win]
+        - if not exist %PREFIX%\\Library\\include\\openblas\\cblas.h exit 1           # [win]
+        - if not exist %PREFIX%\\Library\\include\\openblas\\openblas_config.h exit 1 # [win]
     about:
       home: https://www.openblas.net
       license: BSD-3-Clause
