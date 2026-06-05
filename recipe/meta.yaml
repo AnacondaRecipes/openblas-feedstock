@@ -1,5 +1,5 @@
-{% set version = "0.3.30" %}
-{% set sha_hash = "27342cff518646afb4c2b976d809102e368957974c250a25ccc965e53063c95d" %}
+{% set version = "0.3.31" %}
+{% set sha_hash = "6dd2a63ac9d32643b7cc636eab57bf4e57d0ed1fff926dfbc5d3d97f2d2be3a6" %}
 
 package:
   name: openblas_multipkg
@@ -19,7 +19,7 @@ source:
     - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 3
+  number: 2
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -62,21 +62,24 @@ outputs:
         - if exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                                                # [win]
 
     about:
-      home: https://www.openblas.net/
+      home: https://www.openblas.net
       license: BSD-3-Clause
       license_file: LICENSE
       license_family: BSD
       summary: An Optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-      doc_url: https://www.openblas.net/
+      doc_url: https://www.openblas.net
       doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
   - name: openblas-devel
     files:
-      - include/*blas.h
-      - include/lapack*.h
-      - include/openblas_config.h
+      - include/*blas.h                       # [not win]
+      - include/lapack*.h                     # [not win]
+      - include/openblas_config.h             # [not win]
+      - Library/include/openblas/*blas.h      # [win]
+      - Library/include/openblas/lapack*.h    # [win]
+      - Library/include/openblas/openblas_config.h  # [win]
       - lib/cmake/openblas                    # [not win]
       - lib/pkgconfig/*blas.pc                # [not win]
       - lib/pkgconfig/lapack*.pc              # [not win]
@@ -105,19 +108,21 @@ outputs:
         - test -f ${PREFIX}/lib/pkgconfig/cblas.pc                         # [not win]
         - test -f ${PREFIX}/lib/pkgconfig/lapack.pc                        # [not win]
         - test -f ${PREFIX}/site.cfg                                       # [not win]
-        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\blas.pc exit 1    # [win]
-        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\cblas.pc exit 1   # [win]
-        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\lapack.pc exit 1  # [win]
-        - if not exist %PREFIX%\\Library\\site.cfg exit 1                   # [win]
-        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1          # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\blas.pc exit 1              # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\cblas.pc exit 1             # [win]
+        - if not exist %PREFIX%\\Library\\lib\\pkgconfig\\lapack.pc exit 1            # [win]
+        - if not exist %PREFIX%\\Library\\site.cfg exit 1                             # [win]
+        - if not exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                    # [win]
+        - if not exist %PREFIX%\\Library\\include\\openblas\\cblas.h exit 1           # [win]
+        - if not exist %PREFIX%\\Library\\include\\openblas\\openblas_config.h exit 1 # [win]
     about:
-      home: https://www.openblas.net/
+      home: https://www.openblas.net
       license: BSD-3-Clause
       license_file: LICENSE
       license_family: BSD
       summary: OpenBLAS headers and libraries for developing software that used OpenBLAS.
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-      doc_url: https://www.openblas.net/
+      doc_url: https://www.openblas.net
       doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
@@ -162,7 +167,7 @@ outputs:
       license: BSD-3-clause
 
 about:
-  home: https://www.openblas.net/
+  home: https://www.openblas.net
   license: BSD-3-Clause
   license_file:
     - LICENSE
@@ -170,7 +175,7 @@ about:
   license_family: BSD
   summary: An optimized BLAS library
   description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
-  doc_url: https://www.openblas.net/
+  doc_url: https://www.openblas.net
   dev_url: https://github.com/xianyi/OpenBLAS
 
 extra:
