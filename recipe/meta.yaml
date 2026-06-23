@@ -34,7 +34,7 @@ requirements:
     - cmake                      # [win]
     - curl                       # [win]
     - jom                        # [win]
-    - ninja                      # [win]
+    - ninja-base                 # [win]
     - make                       # [unix]
     - objconv                    # [osx]
 outputs:
