@@ -8,11 +8,6 @@ if [[ ${target_platform} != linux-aarch64 ]] && [[ ${target_platform} != linux-6
     ulimit -s 50000
 fi
 
-# Fix segfault issue arising from a bug in Linux 2.6.32; we can probably skip
-# this patch once we drop support for CentOS/RHEL 6.x. For details, see:
-# https://github.com/xianyi/OpenBLAS/wiki/faq#Linux_SEGFAULT
-patch < segfaults.patch
-
 # Build configuration options
 declare -a build_opts
 
