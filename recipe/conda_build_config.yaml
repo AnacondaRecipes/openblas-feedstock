@@ -14,6 +14,3 @@ c_compiler_version:
 cxx_compiler_version:
   - 20.1.8                 # [win]
   - 17                     # [osx]
-
-perl:
-  - 5.42
