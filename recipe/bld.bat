@@ -14,14 +14,19 @@ if "%USE_OPENMP%"=="1" (
 :: millions of lines of warnings with clang-19
 set "CFLAGS=%CFLAGS% -w"
 
+if /i "%SUBDIR%"=="win-arm64" (
+    set "CMAKE_ARCH_ARGS=-DDYNAMIC_ARCH=OFF -DTARGET=ARMV8"
+) else (
+    set "CMAKE_ARCH_ARGS=-DDYNAMIC_ARCH=ON"
+)
+
 cmake -G "Ninja"                            ^
     -DCMAKE_C_COMPILER=clang-cl             ^
     -DCMAKE_CXX_COMPILER=clang-cl           ^
     -DCMAKE_Fortran_COMPILER=flang          ^
     -DCMAKE_BUILD_TYPE=Release              ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
-    -DDYNAMIC_ARCH=OFF                      ^
-    -DTARGET=ARMV8                          ^
+    !CMAKE_ARCH_ARGS!                       ^
     -DBUILD_WITHOUT_LAPACK=no               ^
     -DNO_AVX512=1                           ^
     -DNOFORTRAN=0                           ^
