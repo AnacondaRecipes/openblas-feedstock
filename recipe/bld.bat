@@ -14,7 +14,7 @@ if "%USE_OPENMP%"=="1" (
 :: millions of lines of warnings with clang-19
 set "CFLAGS=%CFLAGS% -w"
 
-if /i "%SUBDIR%"=="win-arm64" (
+if /i "%target_platform%"=="win-arm64" (
     REM getarch incorrectly chooses CORE=A64FX for arm64, so we need to force it to ARMV8
     set "CMAKE_ARCH_ARGS=-DDYNAMIC_ARCH=OFF -DTARGET=ARMV8"
 ) else (
