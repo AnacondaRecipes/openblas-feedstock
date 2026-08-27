@@ -39,6 +39,12 @@ requirements:
     - objconv                    # [osx]
 outputs:
   - name: libopenblas
+    build:
+      # ucrt is auto-injected into run deps by the toolchain's ucrt host package on
+      # win-arm64, but ucrt is OS-provided on Windows 10+ and not shipped on the
+      # win-arm64 channel (nodejs convention: drop ucrt on win-arm64).
+      ignore_run_exports:
+        - ucrt                # [win]
     files:
       - lib/libblas{{ SHLIB_EXT }}    # [unix]
       - lib/libcblas{{ SHLIB_EXT }}   # [unix]
