@@ -87,6 +87,12 @@ outputs:
       # win-arm64.
       ignore_run_exports:
         - ucrt                # [win]
+      # run_exports must live under build: — with an explicit build: section
+      # present, conda-build ignores an output-level run_exports key (the _5
+      # rebuild initially shipped without run_exports.json because of this).
+      run_exports:
+        - {{ pin_subpackage("libopenblas") }}
+        - blas * openblas
     files:
       - include/*blas.h                       # [not win]
       - include/lapack*.h                     # [not win]
@@ -103,9 +109,6 @@ outputs:
       - site.cfg                              # [not win]
       - Library/site.cfg                      # [win]
       - Library/lib/openblas.lib              # [win]
-    run_exports:
-      - {{ pin_subpackage("libopenblas") }}
-      - blas * openblas
     requirements:
       build:
         - {{ stdlib("c") }}
