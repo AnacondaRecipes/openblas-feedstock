@@ -19,7 +19,7 @@ source:
     - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 4
+  number: 5
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -79,6 +79,14 @@ outputs:
       dev_url: https://github.com/xianyi/OpenBLAS
 
   - name: openblas-devel
+    build:
+      # Same as libopenblas above: this output's own stdlib("c") build dep
+      # injects a ucrt run dep on win, but ucrt is OS-provided on Windows 10+
+      # and not shipped on the win-arm64 channel. The _4 rebuild fixed
+      # libopenblas only; without this, openblas-devel is uninstallable on
+      # win-arm64.
+      ignore_run_exports:
+        - ucrt                # [win]
     files:
       - include/*blas.h                       # [not win]
       - include/lapack*.h                     # [not win]
