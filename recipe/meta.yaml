@@ -19,7 +19,7 @@ source:
     - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 3
+  number: 5
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -39,6 +39,12 @@ requirements:
     - objconv                    # [osx]
 outputs:
   - name: libopenblas
+    build:
+      # ucrt is auto-injected into run deps by the toolchain's ucrt host package on
+      # win-arm64, but ucrt is OS-provided on Windows 10+ and not shipped on the
+      # win-arm64 channel (nodejs convention: drop ucrt on win-arm64).
+      ignore_run_exports:
+        - ucrt                # [win]
     files:
       - lib/libblas{{ SHLIB_EXT }}    # [unix]
       - lib/libcblas{{ SHLIB_EXT }}   # [unix]
@@ -69,10 +75,23 @@ outputs:
       summary: An Optimized BLAS library
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
       doc_url: https://www.openblas.net
-      doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
   - name: openblas-devel
+    build:
+      # Same as libopenblas above: this output's own stdlib("c") build dep
+      # injects a ucrt run dep on win, but ucrt is OS-provided on Windows 10+
+      # and not shipped on the win-arm64 channel. The _4 rebuild fixed
+      # libopenblas only; without this, openblas-devel is uninstallable on
+      # win-arm64.
+      ignore_run_exports:
+        - ucrt                # [win]
+      # run_exports must live under build: — with an explicit build: section
+      # present, conda-build ignores an output-level run_exports key (the _5
+      # rebuild initially shipped without run_exports.json because of this).
+      run_exports:
+        - {{ pin_subpackage("libopenblas") }}
+        - blas * openblas
     files:
       - include/*blas.h                       # [not win]
       - include/lapack*.h                     # [not win]
@@ -89,9 +108,6 @@ outputs:
       - site.cfg                              # [not win]
       - Library/site.cfg                      # [win]
       - Library/lib/openblas.lib              # [win]
-    run_exports:
-      - {{ pin_subpackage("libopenblas") }}
-      - blas * openblas
     requirements:
       build:
         - {{ stdlib("c") }}
@@ -123,14 +139,13 @@ outputs:
       summary: OpenBLAS headers and libraries for developing software that used OpenBLAS.
       description: OpenBLAS is based on GotoBLAS2 1.13 BSD version.
       doc_url: https://www.openblas.net
-      doc_source_url: https://github.com/xianyi/OpenBLAS/blob/develop/README.md
       dev_url: https://github.com/xianyi/OpenBLAS
 
   # openblas meta-package. It is better to require openblas-devel or libopenblas
   - name: openblas
     requirements:
       run:
-        - {{ pin_subpackage("libopenblas", exact=True) }}
+        - {{ pin_subpackage("libopenblas", exact=True) }}  # analint: cbc_dep_in_run_missing_from_host  # exact pin_subpackage, not a CBC pin; metapackage has no host by design
         - {{ pin_subpackage("openblas-devel", exact=True) }}
         - blas =*=openblas
         - nomkl
