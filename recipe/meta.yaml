@@ -19,7 +19,7 @@ source:
     - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 5
+  number: 6
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
@@ -59,11 +59,15 @@ outputs:
         - {{ compiler("fortran") }}
     test:
       requires:
-        - python      # [unix]
+        - perl        # [unix]
       commands:
         - test -f ${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }}                                    # [not win]
         - nm -g ${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }} | grep dsecnd                        # [osx and build_platform=="osx-64"]
-        - python -c "import ctypes; ctypes.cdll['${PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }}']"  # [not win]
+        # Using python here would cause conda-build to think that it needs to build this
+        # package for all supported python version (in cbc).
+        # Use perl instead to achieve the same result. Perl is anyway
+        # already part of our dependencies.
+        - perl -MDynaLoader -e 'DynaLoader::dl_load_file("$ENV{PREFIX}/lib/libopenblasp-r{{ version }}{{ SHLIB_EXT }}") or die DynaLoader::dl_error()'  # [not win]
         - if not exist %PREFIX%\\Library\\bin\\openblas.dll exit 1                                            # [win]
         - if exist %PREFIX%\\Library\\lib\\openblas.lib exit 1                                                # [win]
 
