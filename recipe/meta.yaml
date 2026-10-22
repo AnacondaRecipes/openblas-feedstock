@@ -1,5 +1,5 @@
-{% set version = "0.3.31" %}
-{% set sha_hash = "6dd2a63ac9d32643b7cc636eab57bf4e57d0ed1fff926dfbc5d3d97f2d2be3a6" %}
+{% set version = "0.3.34" %}
+{% set sha_hash = "cd7e129868320cc2d033afa920e31202dfe0b8066a5b66661900ccc0f197dfed" %}
 
 package:
   name: openblas_multipkg
@@ -14,12 +14,9 @@ source:
     # cimacopy and zimacopy tests fail on the CI system
     # These tests pass locally. 
     - patches/0002-disable-cimacopy-zimacopy-tests.patch  # [linux and aarch64]
-    - patches/0003-trmv.patch
-    # Remove once https://github.com/OpenMathLib/OpenBLAS/issues/5414 is resolved. 
-    - patches/0004-disable-sme-on-apple-silicon.patch
 
 build:
-  number: 6
+  number: 0
   script_env:
     # Disable OpenMP for all platforms.
     - USE_OPENMP=0
