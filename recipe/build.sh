@@ -65,6 +65,9 @@ build_opts+=(DYNAMIC_ARCH=1)
 case "${target_platform}" in
     linux-aarch64)
         build_opts+=(TARGET="ARMV8")
+        # SME kernels are clang-only. With GCC the SGEMM alpha/beta kernel is a
+        # stub that OPENBLAS_CORETYPE=ARMV9SME can still select (upstream #6099).
+        build_opts+=(NO_SME=1)
         ;;
     linux-ppc64le)
         build_opts+=(TARGET="POWER8")
@@ -83,6 +86,10 @@ case "${target_platform}" in
         ;;
     osx-arm64)
         build_opts+=(TARGET="VORTEX")
+        # clang 17 compiles the SME alpha/beta SGEMM kernel to a stub, and
+        # dynamic dispatch selects it on M4+, returning wrong float32 GEMM
+        # results for beta != 0.
+        build_opts+=(NO_SME=1)
         ;;
 esac
 
